@@ -32,18 +32,24 @@ class Verif:
             }
 
 
-    # ******************************* POUR VERIFIER LA STATUS DE LA BASE DE DONNÉES *****************************************
-    def databaseStatus(self):
+    # ******************************* POUR VERIFIER LA STATUS D'UNE SERVICE *****************************************
+    def servicesStatus(self, nom_service):
         status = False
         reponse = None
-        demande = subprocess.run(['systemctl', 'status', 'mariadb'],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout.split('\n')
-        for data in demande:
-            if re.search(r"Active", data) is not None:
-                reponse = data
-                break
-        resultats = reponse.split(':')
-        messages = resultats[1] + resultats[2] + resultats[3]
-        if(re.search(r"running|start|active", messages) is not None):
-            status = True
-        return json.dumps({'status': status, 'message': messages}, indent=3)
+        try:
+            demande = subprocess.run(['systemctl', 'status', nom_service],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout.split('\n')
+            for data in demande:
+                if re.search(r"Active", data) is not None:
+                    reponse = data
+                    break
+            if reponse is not None:
+                resultats = reponse.split(':')
+                messages = resultats[1] + ' '.join([resultats[i] for i in range(2, len(resultats))])
+                if(re.search(r"running|start|active", messages) is not None):
+                    status = True
+                return json.dumps({'status': status, 'message': messages}, indent=3)
+                
+            else: raise ValueError("Service inconnu !!!")
+        except ValueError:
+            raise
