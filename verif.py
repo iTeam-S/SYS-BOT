@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import imp
 from paramiko import SSHClient, AutoAddPolicy
 import json
 import re
