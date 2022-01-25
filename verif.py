@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 from paramiko import SSHClient, AutoAddPolicy
+import subprocess
 import json
 import re
-import subprocess
+import mysql.connector
 
 
 class Verif:
@@ -33,7 +34,7 @@ class Verif:
 
 
     # ******************************* POUR VERIFIER LA STATUS D'UNE SERVICE *****************************************
-    def servicesStatus(self, nom_service):
+    def statusServices(self, nom_service):
         status = False
         reponse = None
         try:
@@ -53,3 +54,15 @@ class Verif:
             else: raise ValueError("Service inconnu !!!")
         except ValueError:
             raise
+    
+    # ********************* POUR VERIFIER LA CONNEXION À LA BASE DE DONNÉES *********************
+    def statusConnexionDB(self, utilisateur, keyword, db):
+        reponse = False
+        try:
+            reponse = mysql.connector.connect(host='localhost', user = utilisateur,
+             password = keyword, database = db).is_connected()
+            messages = "Connexion établie !"
+        except:
+            messages = "La connexion à la base de données n'a pas pu être effectuer !"
+
+        return json.dumps({"status": reponse, "message": messages}, indent=3)
