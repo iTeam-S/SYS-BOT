@@ -29,7 +29,8 @@ class Verif:
                 "message": str(err)
             }
             
-    def verif_api(self,method,url,data=""):
+            
+    def verif_api(self, method, url, **kwargs):
         
         """
             Methode pour verifier avec des 
@@ -62,14 +63,15 @@ class Verif:
         elif method == "POST":
             try:
                 header = {'content-type': 'application/json; charset=utf-8'}
-                testing = requests.post(url,json=data,headers=header)
-                
-                if testing:
+                data = kwargs.get("data")
+                if data:
+                    testing = requests.post(url,json=data,headers=header)
                     if testing.status_code==200:
                         return {
                             "error":False,
                             "message":"OK"
                         }
+                        
                     else:
                         return {
                             "error": True,
@@ -80,7 +82,7 @@ class Verif:
                 else:
                     return {
                         "error":True,
-                        "message":f"L'API <{url}> du methode POST renvoie RIEN"
+                        "message": "Aucune donnée pour la verification de la faisabilité de cet API"
                     }
                     
             except Exception as err:
@@ -93,24 +95,53 @@ class Verif:
         elif method == "PUT":
             try:
                 header = {'content-type': 'application/json; charset=utf-8'}
-                testing = requests.put(url,data=data,headers=header)
-                
-                if testing.status_code == 200:
-                    return {
-                        "error":False,
-                        "message":"OK"
-                    }
-                else:
+                data = kwargs.get("data")
+                if data:
+                    testing = requests.put(url,json=data,headers=header)
+                    if testing.status_code==200:
+                        return {
+                            "error":False,
+                            "message":"OK"
+                        }
+                        
+                    else:
                         return {
                             "error": True,
                             "status_code":testing.status_code,
                             "raison":str(testing.reason),
                             "message":f"Probléme sur l'API <{url}> du methode PUT"
-                        } 
-                        
+                        }
+                else:
+                    return {
+                        "error":True,
+                        "message": "Aucune donnée pour la verification de la faisabilité de cet API"
+                    }
+                    
             except Exception as err:
                 return {
                     "error":True,
+                    "url":url,
                     "message":str(err)
                 }
             
+    
+    def verif_service_web(self,url):
+        try:
+            testing = requests.get(url)
+            if testing.status_code == 200:
+                return {
+                    "error":False,
+                    "message":"OK"
+                }
+            else:
+                return {
+                    "error": True,
+                    "status_code":testing.status_code,
+                    "raison":str(testing.reason),
+                    "message":f"Probléme sur le site WEB <{url}>"
+                }
+        except Exception as err:
+            return {
+                "error":True,
+                "message":str(err)
+            }        
