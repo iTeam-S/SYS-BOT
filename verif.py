@@ -56,10 +56,10 @@ class Verif:
             raise
     
     # ********************* POUR VERIFIER LA CONNEXION À LA BASE DE DONNÉES *********************
-    def statusConnexionDB(self, utilisateur, keyword, db):
+    def statusConnexionDB(self,nom_hote, utilisateur, keyword, db):
         reponse = False
         try:
-            reponse = mysql.connector.connect(host='localhost', user = utilisateur,
+            reponse = mysql.connector.connect(host = nom_hote, user = utilisateur,
              password = keyword, database = db).is_connected()
             messages = "Connexion établie !"
         except:
