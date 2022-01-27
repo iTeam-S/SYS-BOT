@@ -1,6 +1,7 @@
 #!/usr/bin/python
-from paramiko import SSHClient, AutoAddPolicy
+import json
 import requests
+from paramiko import SSHClient, AutoAddPolicy
 
 
 class Verif:
@@ -15,133 +16,34 @@ class Verif:
         try:
             client = SSHClient()
             client.set_missing_host_key_policy(AutoAddPolicy())
-            client.connect(host, port, username, password, timeout=10)
+            client.connect(host, port, username, password, timeout=20)
             client.close()
 
-            return {
-                "status": True,
-                "message": "connection success"
-            }
+            return False
 
         except Exception as err:
-            return {
-                "status": False,
-                "message": str(err)
-            }
-            
-            
-    def verif_api(self, method, url, **kwargs):
-        
+            return str(err)
+
+    def http(self, url, type="web"):
         """
-            Methode pour verifier avec des 
-            tests les API disponible dans le serveur
+            Methode pour verifier le bon fonctionnement
+            des services http et https (web, api, ...)
         """
-        
-        if method == "GET":
-            try: 
-                testing = requests.get(url)
-                if testing.status_code == 200:
-                    return {
-                        "error":False,
-                        "message":"OK"
-                    }
-                else:
-                    return {
-                        "error": True,
-                        "status_code":testing.status_code,
-                        "raison":str(testing.reason),
-                        "message":f"Probléme sur l'API <{url}> du methode GET"
-                    }
-                    
-            except Exception as err:
-                return {
-                    "error":True,
-                    "url":url,
-                    "message":str(err)
-                }
-                
-        elif method == "POST":
-            try:
-                header = {'content-type': 'application/json; charset=utf-8'}
-                data = kwargs.get("data")
-                if data:
-                    testing = requests.post(url,json=data,headers=header)
-                    if testing.status_code==200:
-                        return {
-                            "error":False,
-                            "message":"OK"
-                        }
-                        
-                    else:
-                        return {
-                            "error": True,
-                            "status_code":testing.status_code,
-                            "raison":str(testing.reason),
-                            "message":f"Probléme sur l'API <{url}> du methode POST"
-                        }
-                else:
-                    return {
-                        "error":True,
-                        "message": "Aucune donnée pour la verification de la faisabilité de cet API"
-                    }
-                    
-            except Exception as err:
-                return {
-                    "error":True,
-                    "url":url,
-                    "message":str(err)
-                }
-                
-        elif method == "PUT":
-            try:
-                header = {'content-type': 'application/json; charset=utf-8'}
-                data = kwargs.get("data")
-                if data:
-                    testing = requests.put(url,json=data,headers=header)
-                    if testing.status_code==200:
-                        return {
-                            "error":False,
-                            "message":"OK"
-                        }
-                        
-                    else:
-                        return {
-                            "error": True,
-                            "status_code":testing.status_code,
-                            "raison":str(testing.reason),
-                            "message":f"Probléme sur l'API <{url}> du methode PUT"
-                        }
-                else:
-                    return {
-                        "error":True,
-                        "message": "Aucune donnée pour la verification de la faisabilité de cet API"
-                    }
-                    
-            except Exception as err:
-                return {
-                    "error":True,
-                    "url":url,
-                    "message":str(err)
-                }
-            
-    
-    def verif_service_web(self,url):
         try:
-            testing = requests.get(url)
-            if testing.status_code == 200:
-                return {
-                    "error":False,
-                    "message":"OK"
-                }
+            req = requests.get(url)
+            if req.status_code == 200:
+                if "api" == type:
+                    if not json.loads(req.text):
+                        return {
+                            "status_code": 200,
+                            "message": "Pas de données",
+                        }
+                return False
             else:
                 return {
-                    "error": True,
-                    "status_code":testing.status_code,
-                    "raison":str(testing.reason),
-                    "message":f"Probléme sur le site WEB <{url}>"
+                    "status_code": req.status_code,
+                    "message": str(req.reason),
                 }
+
         except Exception as err:
-            return {
-                "error":True,
-                "message":str(err)
-            }        
+            return str(err)
