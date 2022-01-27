@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+import json
+import requests
+
 from paramiko import SSHClient, AutoAddPolicy
 import mysql.connector
 
@@ -15,7 +18,7 @@ class Verif:
         try:
             client = SSHClient()
             client.set_missing_host_key_policy(AutoAddPolicy())
-            client.connect(host, port, username, password, timeout=10)
+            client.connect(host, port, username, password, timeout=15)
 
             return client
 
@@ -43,8 +46,32 @@ class Verif:
         try:
             output = ssh_client.exec_command(
                 f"systemctl is-active {srv_name}")[1].read().decode()
-
+            ssh_client.close()
             return True if("active" in output) else False
+       
+        except Exception as err:
+            return str(err)
+
+    def http(self, url, type="web"):
+        """
+            Methode pour verifier le bon fonctionnement
+            des services http et https (web, api, ...)
+        """
+        try:
+            req = requests.get(url)
+            if req.status_code == 200:
+                if "api" == type:
+                    if not json.loads(req.text):
+                        return {
+                            "status_code": 200,
+                            "message": "Pas de données",
+                        }
+                return False
+            else:
+                return {
+                    "status_code": req.status_code,
+                    "message": str(req.reason),
+                }
 
         except Exception as err:
             return str(err)
