@@ -7,3 +7,9 @@ Un bot qui va analyser l'état des applications déployés sur un serveur et ale
   - Container Docker status
   - Base de données connéctivité
   - SSH connectivité
+
+### Pour le script qui verifier la connexion à la base de données:
+  * Il faut installer le module "**mysql.connector**"
+  * Installation du module: lancer la commande *`pip install mysql-connector-python`*
+  * Puis, importer le module: *`import mysql.connector`*
+    Merci !!! 😊
