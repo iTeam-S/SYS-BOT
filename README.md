@@ -5,6 +5,7 @@ Un bot qui va analyser l'état des applications déployés sur un serveur et ale
   - Service WEB + API accessibilité et erreurs interne
   - Services Linux status
   - Base de données connéctivité
+  - pm2 application status
   - SSH connectivité
 
 ### Pour le script qui verifier la connexion à la base de données:
