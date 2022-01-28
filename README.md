@@ -4,7 +4,6 @@ Un bot qui va analyser l'état des applications déployés sur un serveur et ale
 - 🔧 Type de services et outils à vérifier 
   - Service WEB + API accessibilité et erreurs interne
   - Services Linux status
-  - Container Docker status
   - Base de données connéctivité
   - SSH connectivité
 
