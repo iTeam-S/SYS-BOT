@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-import json
-import requests
-
 from paramiko import SSHClient, AutoAddPolicy
+import subprocess
+import json
+import re
 import mysql.connector
 
 
@@ -14,64 +14,67 @@ class Verif:
     def __init__(self) -> None:
         pass
 
-    def ssh(self, host, username, password, port=22) -> SSHClient:
+    def ssh(self, host, username, password, port=22) -> dict:
         try:
             client = SSHClient()
             client.set_missing_host_key_policy(AutoAddPolicy())
-            client.connect(host, port, username, password, timeout=15)
+            client.connect(host, port, username, password, timeout=10)
+            client.close()
 
-            return client
+            return {
+                "status": True,
+                "message": "connection success"
+            }
 
         except Exception as err:
             return {
-                "error": False,
+                "status": False,
                 "message": str(err)
             }
 
-    def database(self, host, username, password, db_name) -> bool:
+
+    # ******************************* POUR VERIFIER LA STATUS D'UNE SERVICE *****************************************
+    def statusServices(self, nom_service):
+        status = False
+        reponse = None
         try:
-            mysql.connector.connect(
-                host=host,
-                user=username,
-                password=password,
-                database=db_name
-            ).is_connected()
-
-            return True
-
-        except Exception as err:
-            return str(err)
-
-    def service(self, srv_name, ssh_client) -> bool:
+            demande = subprocess.run(['systemctl', 'status', nom_service],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout.split('\n')
+            for data in demande:
+                if re.search(r"Active", data) is not None:
+                    reponse = data
+                    break
+            if reponse is not None:
+                resultats = reponse.split(':')
+                messages = resultats[1] + ' '.join([resultats[i] for i in range(2, len(resultats))])
+                if(re.search(r"running|start|active", messages) is not None):
+                    status = True
+                return json.dumps({'status': status, 'message': messages}, indent=3)
+                
+            else: raise ValueError("Service inconnu !!!")
+        except ValueError:
+            raise
+    
+    # ********************* POUR VERIFIER LA CONNEXION À LA BASE DE DONNÉES *********************
+    def statusConnexionDB(self,nom_hote, utilisateur, keyword, db):
+        reponse = False
         try:
-            output = ssh_client.exec_command(
-                f"systemctl is-active {srv_name}")[1].read().decode()
-            ssh_client.close()
-            return True if("active" in output) else False
-       
-        except Exception as err:
-            return str(err)
+            reponse = mysql.connector.connect(host = nom_hote, user = utilisateur,
+             password = keyword, database = db).is_connected()
+            messages = "Connexion établie !"
+        except:
+            messages = "La connexion à la base de données n'a pas pu être effectuer !"
 
-    def http(self, url, type="web"):
-        """
-            Methode pour verifier le bon fonctionnement
-            des services http et https (web, api, ...)
-        """
-        try:
-            req = requests.get(url)
-            if req.status_code == 200:
-                if "api" == type:
-                    if not json.loads(req.text):
-                        return {
-                            "status_code": 200,
-                            "message": "Pas de données",
-                        }
-                return False
-            else:
-                return {
-                    "status_code": req.status_code,
-                    "message": str(req.reason),
-                }
+        return json.dumps({"status": reponse, "message": messages}, indent=3)
 
-        except Exception as err:
-            return str(err)
+    # ******************************** POUR SAVOIR LA STATUS DU RUNTIME JAVASCRIPT NodeJS **************************
+    def statusPm2(self):
+        status = True
+        messages = "5 sur 5 pour le runtime javascript NodeJS !"
+        demande = subprocess.run(['pm2', 'list'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout
+        if re.search(r"online", demande) is None:
+            status = False
+            messages = "Processus failed pour le runtime javascript NodeJS !"
+
+        return json.dumps({'status': status, 'messages': messages}, indent=3)
