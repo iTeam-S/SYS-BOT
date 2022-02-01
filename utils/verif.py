@@ -15,6 +15,10 @@ class Verif:
         pass
 
     def ssh(self, host, username, password, port=22) -> SSHClient:
+        """
+            Methode pour verifier la connectivite
+            par ssh
+        """
         try:
             client = SSHClient()
             client.set_missing_host_key_policy(AutoAddPolicy())
@@ -29,6 +33,10 @@ class Verif:
             }
 
     def database(self, host, username, password, db_name) -> bool:
+        """
+            Methode pour verifier la connectivite
+            a une base de donnee
+        """
         try:
             mysql.connector.connect(
                 host=host,
@@ -43,16 +51,20 @@ class Verif:
             return str(err)
 
     def service(self, srv_name, ssh_client) -> bool:
+        """
+            Methode pour verifier le status
+            d'un service linux en passant par ssh
+        """
         try:
             output = ssh_client.exec_command(
                 f"systemctl is-active {srv_name}")[1].read().decode()
             ssh_client.close()
             return True if("active" in output) else False
-       
+
         except Exception as err:
             return str(err)
 
-    def http(self, url, type="web"):
+    def http(self, url, type="web") -> dict:
         """
             Methode pour verifier le bon fonctionnement
             des services http et https (web, api, ...)
