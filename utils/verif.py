@@ -87,3 +87,18 @@ class Verif:
 
         except Exception as err:
             return str(err)
+
+    def pm2(self, app_name, ssh_client) -> bool:
+        """
+            Methode pour verifier le status des
+            application nodeJS géré par pm2
+        """
+
+        try:
+            output = ssh_client.exec_command(
+                f"pm2 show {app_name} | grep status")[1].read().decode()
+            ssh_client.close()
+            return True if("online" in output) else False
+
+        except Exception as err:
+            return str(err)
