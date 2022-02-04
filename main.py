@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# import os
+import os
 import yaml
 from utils import verif
 # from utils import webdriver
@@ -11,8 +11,8 @@ def send_message(message):
 
 
 if __name__ == "__main__":
-    USER = "arleme"
-    PASS = "__rxxt@77__"
+    USER = os.getenv("SSH_USER")
+    PASS = os.getenv("SSH_PASS")
 
     with open('check-list.yaml', 'r') as file:
         check_list = yaml.safe_load(file)
