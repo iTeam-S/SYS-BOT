@@ -1,32 +1,29 @@
-apps:
-  - web:
-    - https://iteam-s.mg
-    - https://tanimboly.org
-    - https://ahia-madagascar.com
-    - https://prod.iteam-s.mg
-    - https://data.iteam-s.mg
+web:
+  - https://iteam-s.mg
+  - https://tanimboly.org
+  - https://ahia-madagascar.com
+  - https://prod.iteam-s.mg
+  - https://data.iteam-s.mg
 
-  - api:
-    - https://api.iteam-s.mg
-    - https://daz-api.iteam-s.mg
+api:
+  - https://api.iteam-s.mg/api/membre/list/
+  - http://daz-api.iteam-s.mg/api/v1/users/
 
-  - pm2:
-    - AHIA
-    - ITEAMS
-    - TANIMBOLY
-    - TOMADY
-  
+pm2:
+  - AHIA
+  - ITEAMS
+  - TANIMBOLY
+  - TOMADY
+
 services:
-  - system:
-    - nginx
-    - mariadb
-    - certbot
-    - named
-  - apps:
-    - cockpit
-    - amet
-    - bjj
-    - daz-api
-    - docker
-    - pm2-ntsoa
-    - pm2-root
+  - nginx
+  - mariadb
+  - certbot
+  - named
+  - cockpit
+  - amet
+  - bjj
+  - daz-api
+  - docker
+  - pm2-ntsoa
+  - pm2-root

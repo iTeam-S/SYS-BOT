@@ -27,10 +27,7 @@ class Verif:
             return client
 
         except Exception as err:
-            return {
-                "error": False,
-                "message": str(err)
-            }
+            return str(err)
 
     def database(self, host, username, password, db_name) -> bool:
         """
@@ -58,7 +55,6 @@ class Verif:
         try:
             output = ssh_client.exec_command(
                 f"systemctl is-active {srv_name}")[1].read().decode()
-            ssh_client.close()
             return True if("active" in output) else False
 
         except Exception as err:
@@ -78,7 +74,7 @@ class Verif:
                             "status_code": 200,
                             "message": "Pas de données",
                         }
-                return False
+                return True
             else:
                 return {
                     "status_code": req.status_code,
@@ -97,7 +93,6 @@ class Verif:
         try:
             output = ssh_client.exec_command(
                 f"pm2 show {app_name} | grep status")[1].read().decode()
-            ssh_client.close()
             return True if("online" in output) else False
 
         except Exception as err:
