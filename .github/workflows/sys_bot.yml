@@ -4,12 +4,20 @@
 name: Python application
 
 on:
+ push :
+    branches: [ main ]  
   # schedule:
   #   - cron:  '*/10 * * * *'
   pull_request:
     branches: [ main ]  
-  
+  workflow_call:
+    secrets:
+      ITEAMS_DB_HOST:
+        description: 'A token passed from the caller workflow'
+        required: false
+
 jobs:
+  pass-secret-to-action:
   build:
 
     runs-on: ubuntu-latest
@@ -34,3 +42,10 @@ jobs:
     - name: Run script
       run: |
         python main.py
+
+    - name: Pass the received secret to an action
+        uses: ./.github/actions/my-action
+        with:
+          token: ${{ secrets.ITEAMS_DB_HOST}}
+      run: |
+          echo $token
