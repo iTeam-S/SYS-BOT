@@ -4,7 +4,7 @@
 name: Python application
 
 on:
- push :
+  push :
     branches: [ main ]  
   # schedule:
   #   - cron:  '*/10 * * * *'
@@ -17,8 +17,7 @@ on:
         required: false
 
 jobs:
-  pass-secret-to-action:
-  build:
+  verif-server:
 
     runs-on: ubuntu-latest
 
@@ -33,18 +32,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
     - name: Pass the received secret to an action
-        uses: ./.github/actions/my-action
-        with:
-          token: ${{ secrets.ITEAMS_DB_HOST}}
-      run: |
-          echo $token
+      uses: ./.github/actions/my-action
+      with:
+       token: ${{ secrets.ITEAMS_DB_HOST}}
+          
     - name: Lint with flake8
       run: |
+        echo $token
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
     - name: Run script
       run: |
         python main.py
