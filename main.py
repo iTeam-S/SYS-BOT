@@ -15,7 +15,7 @@ if __name__ == "__main__":
     PASS = os.getenv("SSH_PASS")
     TOKEN = os.getenv("TOKEN")
     
-    print(f"==>> {TOKEN} <<==")
+    print(f"==>> {len(TOKEN)} <<==")
     with open('check-list.yaml', 'r') as file:
         check_list = yaml.safe_load(file)
         v = verif.Verif()
