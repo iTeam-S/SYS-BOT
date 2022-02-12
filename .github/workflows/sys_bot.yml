@@ -30,6 +30,7 @@ jobs:
         
     - name: Run script with env
       env:
+       TOKEN: ${{ secrets.MY_TEST_SECRET}} 
        TOKEN_TEST: ${{ secrets.MY_TEST_SECRET}} 
       run: |
         echo $TOKEN_TEST
