@@ -31,12 +31,14 @@ jobs:
     - name: Run script with env
       env:
        TOKEN: ${{ secrets.ITEAMS_DB_HOST}}
+       TOKEN_TEST: ${{ secrets.MY_TEST_SECRET}} 
       run: |
         python main.py
           
     - name: Lint with flake8
       run: |
-        echo $token
+        echo $TOKEN
+        echo $TOKEN_TEST
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
