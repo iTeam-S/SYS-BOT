@@ -33,6 +33,7 @@ jobs:
        TOKEN: ${{ secrets.ITEAMS_DB_HOST}}
        TOKEN_TEST: ${{ secrets.MY_TEST_SECRET}} 
       run: |
+        echo $TOKEN_TEST
         python main.py
           
     - name: Lint with flake8
