@@ -13,9 +13,7 @@ def send_message(message):
 if __name__ == "__main__":
     USER = os.getenv("SSH_USER")
     PASS = os.getenv("SSH_PASS")
-    TOKEN = os.getenv("TOKEN")
-    
-    print(f"==>> {len(TOKEN)} <<==")
+
     with open('check-list.yaml', 'r') as file:
         check_list = yaml.safe_load(file)
         v = verif.Verif()
