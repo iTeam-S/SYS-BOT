@@ -2,17 +2,19 @@
 import os
 import yaml
 from utils import verif
-# from utils import webdriver
+from utils.webdriver import WebBrowser
 
 
 def send_message(message):
-    print(message)
-    pass
+    driver = WebBrowser()
+    driver.connexion()
+    driver.send_msg("4349594458421719", message)
+    driver.browser.close()
 
 
 if __name__ == "__main__":
-    USER = os.getenv("SSH_USER")
-    PASS = os.getenv("SSH_PASS")
+    USER = os.environ.get("SSH_USER")
+    PASS = os.environ.get("SSH_PASS")
 
     with open('check-list.yaml', 'r') as file:
         check_list = yaml.safe_load(file)
@@ -40,7 +42,7 @@ if __name__ == "__main__":
             for service in check_list["services"]:
                 verif_srv = v.service(service, ssh_client)
                 if verif_srv is not True:
-                    send_message(f"{service} : {str(verif_srv)}")
+                    send_message(f"{service} : INACTIVE or DEAD")
                 else:
                     print(f"[ACTIVE] {service}")
 
@@ -50,6 +52,6 @@ if __name__ == "__main__":
                     send_message(pm2_app + str(verif_pm2))
                 else:
                     print(f"[ONLINE] {pm2_app}")
-            ssh_client.close()
+        ssh_client.close()
 
     print("[ANALYSE DONE]")

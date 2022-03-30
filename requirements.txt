@@ -2,3 +2,4 @@ pyyaml
 paramiko
 mysql-connector-python
 undetected_chromedriver
+beautifulsoup4

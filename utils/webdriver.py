@@ -6,13 +6,14 @@ import requests
 from bs4 import BeautifulSoup
 
 import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
 
 
 class WebBrowser:
     def __init__(self) -> None:
         self.crm_options = uc.ChromeOptions()
-        self.crm_options.add_argument('--no-sandbox')
         self.crm_options.add_argument('--headless')
+        self.crm_options.add_argument('--no-sandbox')
         self.crm_options.add_argument('--disable-dev-shm-usage')
 
         self.browser = uc.Chrome(options=self.crm_options)
@@ -43,10 +44,9 @@ class WebBrowser:
                         os.remove('cookies.pkl')
                         self.connexion(self.browser)
             self.browser.get('https://mbasic.facebook.com/')
-            while not self.page_loaded(self.browser):
+            while not self.page_loaded():
                 time.sleep(0.5)
             if 'login' in self.browser.current_url:
-                print('Je me login encore')
                 try:
                     os.remove('cookies.pkl')
                 except FileNotFoundError:
@@ -57,20 +57,21 @@ class WebBrowser:
         self.browser.get('https://mbasic.facebook.com/')
         # Login to the fb account
         if '/cookie/' in self.browser.current_url:
-            self.browser.find_element_by_xpath(
-                '//button[@type="submit"]').click()
-        self.browser.find_element_by_tag_name('body').screenshot("conn1.png")
-        username_ipt = self.browser.find_element_by_id("m_login_email")
-        username_ipt.send_keys(os.environ.get("ITEAMS_LOGIN"))
-        print("Variable env => ", os.environ.get("ITEAMS_LOGIN"))
+            self.browser.find_element(
+                by=By.XPATH, value='//button[@type="submit"]').click()
 
-        password_ipt = self.browser.find_element_by_name("pass")
-        password_ipt.send_keys(os.environ.get("ITEAMS_PASS"))
+        # Enter username
+        username_ipt = self.browser.find_element(
+            by=By.ID, value="m_login_email")
+        username_ipt.send_keys(os.environ.get("FB_USER"))
+        # Enter password
+        password_ipt = self.browser.find_element(by=By.NAME, value="pass")
+        password_ipt.send_keys(os.environ.get("FB_PASS"))
+        # Press login button
+        self.browser.find_element(by=By.NAME, value="login").click()
 
-        self.browser.find_element_by_name("login").click()
-        while not self.page_loaded(self.browser):
+        while not self.page_loaded():
             time.sleep(0.5)
-        self.browser.find_element_by_tag_name('body').screenshot("conn1.png")
         print("connexion success")
         with open("cookies.pkl", "wb") as fcookies:
             pickle.dump(self.browser.get_cookies(), fcookies)
@@ -81,37 +82,29 @@ class WebBrowser:
             avec trois parametres: webdriver, userID (ex: 100000144), message.
         """
         # Connecter le driver à Facebook
-        while not self.page_loaded(self.browser):
+        while not self.page_loaded():
             time.sleep(0.5)
+
         # Redirect to the message page of the user
-        self.browser.find_element_by_tag_name('body').screenshot("conn_m.png")
         self.browser.get(
             'https://mbasic.facebook.com/messages/thread/' + userID)
-        while not self.page_loaded(self.browser):
+        while not self.page_loaded():
             time.sleep(0.5)
         time.sleep(2)
         # If the user is not a friend
-        try:
-            message_ipt = self.browser.find_element_by_name("body")
-        # If the user is a friend
-        except Exception as err:
-            print(err)
-            message_ipt = self.browser.find_element_by_id("composerInput")
 
-        self.browser.find_element_by_tag_name('body').screenshot("test_m.png")
-        # message_ipt = self.browser.find_element_by_tag_name('textarea')
-
+        message_ipt = self.browser.find_element(
+            by=By.ID, value="composerInput")
         message_ipt.send_keys(message)
 
         # Send the message
         try:
-            self.browser.find_element_by_name("Send").click()
+            self.browser.find_element(by=By.NAME, value="send").click()
         except Exception as err:
             print(err)
-            self.browser.find_element_by_name("send").click()
-        self.browser.find_element_by_tag_name('body').screenshot("fara.png")
+            self.browser.find_element(by=By.NAME, value="Send").click()
 
-    def get_user_id(username, driver):
+    def get_user_id(self, username):
         """
             A partir d'un username du profil facebook,
                 retourne l'userID sinon None si Not found
@@ -121,7 +114,7 @@ class WebBrowser:
 
         cookies = {
             cookie['name']: cookie['value']
-            for cookie in driver.browser.get_cookies()
+            for cookie in self.browser.get_cookies()
         }
 
         s = requests.Session()

@@ -7,18 +7,18 @@ web:
 
 api:
   - https://api.iteam-s.mg/api/membre/list/
-  - http://daz-api.iteam-s.mg/api/v1/users/
 
 pm2:
   - AHIA
   - ITEAMS
   - TANIMBOLY
   - TOMADY
+  - FORUM
 
 services:
   - nginx
-  - mariadb
   - certbot
+  - mariadb
   - named
   - cockpit
   - amet
