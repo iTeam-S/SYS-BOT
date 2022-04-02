@@ -94,10 +94,13 @@ class WebBrowser:
             time.sleep(0.5)
         time.sleep(2)
         # If the user is not a friend
-
-        message_ipt = self.browser.find_element(
-            by=By.ID, value="composerInput")
-        message_ipt.send_keys(message)
+        try:
+            message_ipt = self.browser.find_element(
+                by=By.ID, value="composerInput")
+            message_ipt.send_keys(message)
+        except Exception:
+            print("[URL] ", self.browser.current_url)
+            pass
 
         # Send the message
         try:
