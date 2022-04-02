@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 
+uc.TARGET_VERSION = 98
+
 
 class WebBrowser:
     def __init__(self) -> None:
