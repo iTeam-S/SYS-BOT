@@ -23,11 +23,11 @@ jobs:
       with:
         python-version: "3.9"
         
-    - name: Install chrome latest version
-      run: |
-        sudo apt-get update
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
+    # - name: Install chrome latest version
+    #   run: |
+    #     sudo apt-get update
+    #     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    #     sudo dpkg -i google-chrome-stable_current_amd64.deb
 
     - name: Install dependencies
       run: |

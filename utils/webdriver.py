@@ -5,10 +5,8 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-import undetected_chromedriver as uc
+import undetected_chromedriver.v2 as uc
 from selenium.webdriver.common.by import By
-
-uc.TARGET_VERSION = 98
 
 
 class WebBrowser:
@@ -18,7 +16,7 @@ class WebBrowser:
         self.crm_options.add_argument('--no-sandbox')
         self.crm_options.add_argument('--disable-dev-shm-usage')
 
-        self.browser = uc.Chrome(options=self.crm_options)
+        self.browser = uc.Chrome(version_main=98, options=self.crm_options)
 
     def page_loaded(self) -> bool:
         """
