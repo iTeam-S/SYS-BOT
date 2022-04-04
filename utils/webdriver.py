@@ -102,10 +102,10 @@ class WebBrowser:
 
         # Send the message
         try:
-            self.browser.find_element(by=By.NAME, value="send").click()
+            self.browser.find_element(by=By.NAME, value="Send").click()
         except Exception as err:
             print(err)
-            self.browser.find_element(by=By.NAME, value="Send").click()
+            self.browser.find_element(by=By.NAME, value="send").click()
 
     def get_user_id(self, username):
         """
